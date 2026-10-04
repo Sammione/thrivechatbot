@@ -10,10 +10,24 @@ def _e(name, default, cast=str):
     return lambda: cast(os.getenv(name, default))
 
 
+def _default_model():
+    if os.getenv("AGENT_MODEL"):
+        return os.getenv("AGENT_MODEL")
+    provider = os.getenv("AGENT_PROVIDER", "auto")
+    if provider == "groq" or os.getenv("GROQ_API_KEY"):
+        return "llama-3.3-70b-versatile"
+    if provider == "deepseek" or os.getenv("DEEPSEEK_API_KEY"):
+        return "deepseek-chat"
+    return "claude-3-5-sonnet-latest"
+
+
 @dataclass
 class AgentSettings:
     shop_name: str = field(default_factory=_e("SHOP_NAME", "our store"))
-    model: str = field(default_factory=_e("AGENT_MODEL", "claude-sonnet-5-5"))
+    provider: str = field(default_factory=_e("AGENT_PROVIDER", "auto"))        # auto | groq | anthropic | deepseek | openai
+    model: str = field(default_factory=_default_model)
+    groq_api_key: str = field(default_factory=_e("GROQ_API_KEY", ""))
+    openai_base_url: str = field(default_factory=_e("OPENAI_BASE_URL", ""))
     max_tokens: int = field(default_factory=_e("AGENT_MAX_TOKENS", 1024, int))
     max_steps: int = field(default_factory=_e("AGENT_MAX_STEPS", 8, int))      # tool-call rounds per message
     tool_mode: str = field(default_factory=_e("AGENT_TOOL_MODE", "auto"))       # auto | direct | catalog

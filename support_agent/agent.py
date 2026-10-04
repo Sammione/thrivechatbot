@@ -112,8 +112,8 @@ class SupportAgent:
     def __init__(self, settings, mediator, kb, tickets, client=None):
         self.s, self.mediator, self.kb, self.tickets = settings, mediator, kb, tickets
         if client is None:
-            import anthropic
-            client = anthropic.Anthropic()   # reads ANTHROPIC_API_KEY
+            from .llm_client import get_llm_client
+            client = get_llm_client(self.s)
         self.client = client
 
     def _tools(self, ctx):

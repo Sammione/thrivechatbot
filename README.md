@@ -42,7 +42,7 @@ the one it needs, instead of loading every tool at once. This keeps it accurate 
 ```bash
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-export ANTHROPIC_API_KEY=sk-ant-...                     # Windows: set ANTHROPIC_API_KEY=...
+export GROQ_API_KEY=gsk_...                           # Free key from console.groq.com (or set ANTHROPIC_API_KEY)
 export SHOP_NAME="My Store"
 
 uvicorn examples.mock_backend:app --port 8000           # terminal 1: fake store APIs
@@ -98,8 +98,10 @@ The test page at `/` is for development only.
 
 | Variable | Default | |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | | required |
-| `AGENT_MODEL` | `claude-sonnet-5-5` | |
+| `GROQ_API_KEY` | | Free tier key from [console.groq.com](https://console.groq.com) |
+| `ANTHROPIC_API_KEY` | | Alternative: Claude API key |
+| `AGENT_PROVIDER` | `auto` | `groq`, `anthropic`, `deepseek`, or `auto` |
+| `AGENT_MODEL` | `llama-3.3-70b-versatile` (Groq) | Model ID (or `claude-3-5-sonnet-latest`) |
 | `SHOP_NAME` | `our store` | used in the assistant's instructions |
 | `AGENT_API_KEY` | (none) | shared secret your backend sends as `X-Agent-Key` |
 | `AGENT_TOOL_MODE` | `auto` | `direct`, `catalog` or `auto` |
@@ -109,7 +111,7 @@ The test page at `/` is for development only.
 
 Sessions are kept in memory; use Redis (`support_agent/agent.py` `SessionStore`) if you run several instances.
 
-Docker: `docker build -t support-agent . && docker run -p 8001:8001 -e ANTHROPIC_API_KEY=... support-agent`
+Docker: `docker build -t support-agent . && docker run -p 8001:8001 -e GROQ_API_KEY=... support-agent`
 
 ## Project layout
 ```

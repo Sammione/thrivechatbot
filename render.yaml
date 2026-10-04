@@ -9,11 +9,13 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
-      - key: ANTHROPIC_API_KEY
+      - key: AGENT_PROVIDER
+        value: "groq"
+      - key: GROQ_API_KEY
         sync: false
+      - key: AGENT_MODEL
+        value: "llama-3.3-70b-versatile"
       - key: SHOP_NAME
         value: "My Store"
-      - key: AGENT_MODEL
-        value: "claude-3-5-sonnet-latest"
       - key: AGENT_DATA_DIR
         value: "/tmp/agent"
