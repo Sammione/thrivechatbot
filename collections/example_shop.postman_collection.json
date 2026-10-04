@@ -1,0 +1,30 @@
+{
+  "info": {"name": "Example Shop API", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "item": [
+    {"name": "Orders", "item": [
+      {"name": "List my orders", "request": {"method": "GET", "description": "Orders for a customer, newest first.",
+        "url": {"raw": "{{baseUrl}}/orders?customer_id=&status=", "host": ["{{baseUrl}}"], "path": ["orders"],
+          "query": [{"key": "customer_id", "value": ""}, {"key": "status", "value": "", "description": "pending | shipped | delivered | cancelled"}]}}},
+      {"name": "Get order", "request": {"method": "GET", "description": "One order with items, payment and delivery status.",
+        "url": {"raw": "{{baseUrl}}/orders/:order_id?customer_id=", "host": ["{{baseUrl}}"], "path": ["orders", ":order_id"],
+          "query": [{"key": "customer_id", "value": ""}]}}},
+      {"name": "Cancel order", "request": {"method": "POST", "description": "Cancel an order that hasn't shipped.",
+        "url": {"raw": "{{baseUrl}}/orders/:order_id/cancel", "host": ["{{baseUrl}}"], "path": ["orders", ":order_id", "cancel"]},
+        "body": {"mode": "raw", "raw": "{\"customer_id\": \"c_1\", \"reason\": \"changed my mind\"}"}}}
+    ]},
+    {"name": "Shipping", "item": [
+      {"name": "Track shipment", "request": {"method": "GET", "description": "Courier status and estimated delivery date for an order.",
+        "url": "{{baseUrl}}/shipments/:order_id/tracking"}}
+    ]},
+    {"name": "Returns", "item": [
+      {"name": "Create return request", "request": {"method": "POST", "description": "Start a return for a delivered item.",
+        "url": {"raw": "{{baseUrl}}/returns", "host": ["{{baseUrl}}"], "path": ["returns"]},
+        "body": {"mode": "raw", "raw": "{\"customer_id\": \"c_1\", \"order_id\": \"o_1\", \"item_id\": \"i_1\", \"reason\": \"wrong size\"}"}}}
+    ]},
+    {"name": "Admin", "item": [
+      {"name": "Refund payment", "request": {"method": "POST", "url": "{{baseUrl}}/admin/payments/:payment_id/refund"}},
+      {"name": "Upload invoice", "request": {"method": "POST", "url": "{{baseUrl}}/admin/invoices",
+        "body": {"mode": "formdata", "formdata": [{"key": "file", "type": "file"}]}}}
+    ]}
+  ]
+}

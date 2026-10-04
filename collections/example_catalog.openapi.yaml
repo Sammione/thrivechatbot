@@ -1,0 +1,54 @@
+openapi: 3.0.3
+info: {title: Example Catalog API, version: "1.0"}
+paths:
+  /health:
+    get: {operationId: health, summary: Service health, responses: {"200": {description: ok}}}
+  /products:
+    get:
+      operationId: search_products
+      summary: Search products by keyword, category and price
+      parameters:
+        - {name: q, in: query, schema: {type: string}, description: "Keywords, e.g. 'black leather tote'"}
+        - {name: category, in: query, schema: {type: string, enum: [bag, shoe, clothing]}}
+        - {name: max_price, in: query, schema: {type: number}}
+        - {name: limit, in: query, schema: {type: integer, default: 10}}
+      responses: {"200": {description: ok}}
+  /products/{product_id}:
+    get:
+      operationId: get_product
+      summary: Product details - title, price, stock, sizes, vendor
+      parameters: [{name: product_id, in: path, required: true, schema: {type: string}}]
+      responses: {"200": {description: ok}}
+  /products/{product_id}/recommendations:
+    get:
+      operationId: get_recommendations
+      summary: Products to recommend to a buyer viewing this product
+      parameters:
+        - {name: product_id, in: path, required: true, schema: {type: string}}
+        - {name: max_price, in: query, schema: {type: number}}
+        - {name: complete_the_look, in: query, schema: {type: boolean}, description: "true = matching items from other categories"}
+      responses: {"200": {description: ok}}
+  /products/{product_id}/images:
+    post:
+      operationId: upload_product_image
+      summary: Upload a product image
+      parameters: [{name: product_id, in: path, required: true, schema: {type: string}}]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: {type: object, properties: {file: {type: string, format: binary}}}
+      responses: {"200": {description: ok}}
+  /vendors/{vendor_id}/products:
+    get:
+      operationId: list_vendor_products
+      summary: A vendor's own listings with stock levels
+      parameters: [{name: vendor_id, in: path, required: true, schema: {type: string}}]
+      responses: {"200": {description: ok}}
+  /vendors/{vendor_id}/payouts:
+    get:
+      operationId: list_vendor_payouts
+      summary: A vendor's payouts - amount, status and date
+      parameters: [{name: vendor_id, in: path, required: true, schema: {type: string}}]
+      responses: {"200": {description: ok}}
+  /admin/stats:
+    get: {operationId: admin_stats, summary: Store-wide sales statistics, responses: {"200": {description: ok}}}

@@ -1,0 +1,16 @@
+# Every API the support agent may use. Each service is described by an OpenAPI spec OR a Postman collection.
+# ${VAR:-default} reads environment variables.
+# The two examples below point at the mock backend (examples/mock_backend.py) so you can try the bot right away.
+# Replace them with your real APIs.
+services:
+  - name: catalog
+    description: products, stock, recommendations, vendor listings and payouts
+    base_url: ${CATALOG_URL:-http://localhost:8000}
+    openapi: collections/example_catalog.openapi.yaml       # or a URL, e.g. https://api.yourshop.com/openapi.json
+
+  - name: shop
+    description: orders, shipping, returns
+    base_url: ${SHOP_API_URL:-http://localhost:8000}
+    postman: collections/example_shop.postman_collection.json
+    # forward_user_token: true      # send the logged-in user's token so your backend enforces access too
+    # auth: {type: bearer, token_env: SHOP_SERVICE_TOKEN}     # or {type: header, name: X-API-Key, value_env: SHOP_KEY}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support Agent - test console</title>
+<style>
+  :root{--bg:#f6f5f2;--card:#fff;--ink:#1d1d1b;--mute:#6b6a66;--acc:#1f6f5c;--line:#e3e1dc}
+  @media (prefers-color-scheme:dark){:root{--bg:#161615;--card:#21211f;--ink:#ecebe7;--mute:#9b9a95;--line:#34332f}}
+  *{box-sizing:border-box} body{margin:0;font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+  main{max-width:720px;margin:0 auto;padding:16px;display:flex;flex-direction:column;height:100vh}
+  header{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  input,select,button{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+  button{background:var(--acc);color:#fff;border:none;cursor:pointer}
+  #log{flex:1;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .m{margin:8px 0;white-space:pre-wrap}.u{text-align:right}.u span{background:var(--acc);color:#fff}
+  .m span{display:inline-block;padding:8px 12px;border-radius:12px;background:var(--bg);max-width:85%;text-align:left}
+  .meta{font-size:12px;color:var(--mute)} .pend{border:1px dashed var(--acc);padding:8px;border-radius:10px;margin:8px 0}
+  form{display:flex;gap:8px;margin-top:10px} form input{flex:1}
+</style></head><body><main>
+<header><b>Support agent</b>
+  <input id="uid" value="buyer_1" size="10" aria-label="User id">
+  <select id="role"><option>buyer</option><option>vendor</option><option>admin</option></select>
+  <button type="button" onclick="sid=null;log.innerHTML=''">New chat</button></header>
+<div id="log"></div>
+<form id="f"><input id="msg" placeholder="Ask about a product, an order, an alert..." autocomplete="off"><button>Send</button></form>
+</main>
+<script>
+let sid=null; const log=document.getElementById('log');
+const hdr=()=>({'Content-Type':'application/json','X-User-Id':uid.value,'X-User-Role':role.value});
+function add(cls,text,meta){const d=document.createElement('div');d.className='m '+cls;
+  const s=document.createElement('span');s.textContent=text;d.appendChild(s);
+  if(meta){const x=document.createElement('div');x.className='meta';x.textContent=meta;d.appendChild(x)}
+  log.appendChild(d);log.scrollTop=log.scrollHeight}
+function show(r){add('a',r.reply||'(no reply)',r.tools_used&&r.tools_used.length?'used: '+r.tools_used.join(', '):'');
+  if(r.pending_action){const p=document.createElement('div');p.className='pend';p.textContent='Confirm: '+r.pending_action.summary+' ';
+    for(const [lbl,ok] of [['Confirm',true],['Cancel',false]]){const b=document.createElement('button');b.textContent=lbl;b.style.marginLeft='6px';
+      b.onclick=()=>{p.remove();post('/chat/confirm',{session_id:sid,action_id:r.pending_action.action_id,approve:ok})};p.appendChild(b)}
+    log.appendChild(p)}}
+async function post(url,body){try{const res=await fetch(url,{method:'POST',headers:hdr(),body:JSON.stringify(body)});
+  const r=await res.json(); if(!res.ok){add('a','Error: '+(r.detail||res.status));return} sid=r.session_id; show(r)}catch(e){add('a','Network error')}}
+f.onsubmit=e=>{e.preventDefault();const t=msg.value.trim();if(!t)return;add('u',t);msg.value='';post('/chat',{message:t,session_id:sid})};
+</script></body></html>

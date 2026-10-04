@@ -1,0 +1,31 @@
+# What the AI may do through the mediator.
+# Operation names are <service>__<operationId> (see GET /tools). Patterns like "shop__admin_*" work.
+default_roles: [buyer, vendor, admin]     # roles allowed for operations not listed below
+write_requires_confirmation: true         # non-GET calls wait for the user to press Confirm
+max_response_chars: 6000
+redact_fields: [password, token, access_token, refresh_token, card_number, cvv, pin, secret, api_key, bvn]
+
+hidden:                                   # never shown to the AI
+  - "*__health"
+
+operations:
+  catalog__get_recommendations:
+    description: Use when a buyer asks for alternatives, cheaper options, or what goes with an item (complete_the_look=true).
+
+  # Vendors only ever see their own data; admins may pass any vendor_id
+  catalog__list_vendor_products: {roles: [vendor, admin], bind: {vendor_id: user_id}, bind_roles: [vendor]}
+  catalog__list_vendor_payouts:
+    roles: [vendor, admin]
+    bind: {vendor_id: user_id}
+    bind_roles: [vendor]
+    redact: [bank_account]
+
+  catalog__admin_*: {roles: [admin]}
+
+  # Buyers only ever see their own orders
+  shop__orders_list_my_orders:   {roles: [buyer], bind: {customer_id: user_id}}
+  shop__orders_get_order:        {roles: [buyer, admin], bind: {customer_id: user_id}, bind_roles: [buyer]}
+  shop__orders_cancel_order:     {roles: [buyer], bind: {body.customer_id: user_id}}
+  shop__shipping_track_shipment: {roles: [buyer, admin]}
+  shop__returns_create_return_request: {roles: [buyer], bind: {body.customer_id: user_id}}
+  shop__admin_*: {roles: [admin]}
