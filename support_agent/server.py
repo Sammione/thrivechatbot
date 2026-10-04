@@ -50,6 +50,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Customer Support Agent", version="1.0", lifespan=lifespan)
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 def user_ctx(x_user_id: str = Header(...), x_user_role: str = Header("buyer"),
              x_user_token: Optional[str] = Header(None), x_agent_key: Optional[str] = Header(None)):
     if settings.api_key and x_agent_key != settings.api_key:

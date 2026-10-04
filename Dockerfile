@@ -8,4 +8,4 @@ COPY knowledge knowledge
 COPY collections collections
 ENV AGENT_DATA_DIR=/data/agent
 EXPOSE 8001
-CMD ["uvicorn", "support_agent.server:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["sh", "-c", "uvicorn support_agent.server:app --host 0.0.0.0 --port ${PORT:-8001}"]
